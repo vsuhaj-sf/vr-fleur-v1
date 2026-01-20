@@ -546,7 +546,7 @@ try {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${SESSION_ID}`, // Using Session ID as the Bearer token
+                'Authorization': 'Bearer ' + SESSION_ID, // Using Session ID as the Bearer token
                 'X-Chat-Sequence-Id': sequenceId.toString()
             },
             body: JSON.stringify({

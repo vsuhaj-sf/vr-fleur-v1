@@ -663,7 +663,7 @@ async function sendToAI() {
     
 // Construct the Salesforce Agentforce API Endpoint
     // Note: The specific endpoint path may vary depending on your Agent setup (e.g., /services/data/v60.0/einstein/agents/...)
-    const endpoint = `https://api.salesforce.com/einstein/ai-agent/v1/sessions/${SESSION_ID}/messages`;    
+    const endpoint = `https://storm-319bad5e814663.my.salesforce.com/services/data/v60.0/einstein/ai-agent/v1/sessions/${SESSION_ID}/messages`;    
 
 try {
         const response = await fetch(endpoint, {

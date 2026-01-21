@@ -663,32 +663,43 @@ async function sendToAI() {
     
 // Construct the Salesforce Agentforce API Endpoint
     // Note: The specific endpoint path may vary depending on your Agent setup (e.g., /services/data/v60.0/einstein/agents/...)
-    const endpoint = `${MY_DOMAIN}/services/data/v60.0/einstein/agents/${AGENT_ID}/interactions`;    
+    const endpoint = `https://api.salesforce.com/einstein/ai-agent/v1/sessions/${SESSION_ID}/messages`;    
 
 try {
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + ACCESS_TOKEN, // Using Session ID as the Bearer token
-                'X-Chat-Sequence-Id': sequenceId.toString()
+                'Authorization': `Bearer ${ACCESS_TOKEN}` // Using Session ID as the Bearer token
+                
             },
             body: JSON.stringify({
                 "message": {
-                    "text": userMessage
+                    "type": "Text",
+                    "sequenceId": sequenceId,
+					"text": userMessage
                 },
-                "sessionId": SESSION_ID,
-                "sequenceId": sequenceId
+                "variables": [
+                    {
+                        "name": "$Context.EndUserLanguage",
+                        "type": "Text",
+                        "value": "en_US"
+                    }
+                ]
             })
         });
 
+		if (response.status === 401) {
+            throw new Error("401: JWT/Bearer Token Expired or Invalid");
+        }
+	
         const data = await response.json();
 
         // Increment Sequence ID for the next message
         sequenceId++;
 
-        // Extract the agent's response text (standard Agentforce JSON structure)
-        const agentReply = data.processedMessages[0].text || "I am here to assist you.";
+        // Parse Agentforce v1 Response
+        const agentReply = data.messages ? data.messages[0].text : "Connection established.";
         
         // Trigger Typewriter with actual Agentforce response
         typeWriter(fleurBubble, agentReply);

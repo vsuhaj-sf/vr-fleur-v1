@@ -390,7 +390,75 @@
     50% { opacity: 1; }
 }
 
+.secure-access-zone {
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(125, 138, 74, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
 
+.access-label {
+    font-size: 0.55rem;
+    letter-spacing: 1.5px;
+    color: var(--primary-green);
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+#newSessionId {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-dark);
+    padding: 10px;
+    border-radius: 4px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.7rem;
+    outline: none;
+    transition: 0.3s;
+}
+
+#newSessionId:focus {
+    border-color: var(--primary-green);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+#newAccessToken {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-dark);
+    padding: 10px;
+    border-radius: 4px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.7rem;
+    outline: none;
+    transition: 0.3s;
+}
+
+#newAccessToken:focus {
+    border-color: var(--primary-green);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.secure-access-zone button {
+    background: var(--primary-green);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.secure-access-zone button:hover {
+    background: #5e6938;
+    box-shadow: 0 0 10px rgba(125, 138, 74, 0.4);
+}
 
         /* Animations */
         @keyframes rotate {
@@ -505,6 +573,17 @@
                 <li>FAQs</li>
             </ul>
         </div>
+		<div class="secure-access-zone">
+            <span class="access-label">AGENTFORCE ACCESS TOKEN</span>
+            <input type="password" id="newAccessToken" placeholder="Enter Access Token..." autocomplete="off">
+            <button onclick="updateToken()">SYNC TOKEN</button>
+        </div>
+
+	<div class="secure-access-zone">
+            <span class="access-label">SESSION</span>
+            <input type="password" id="newSessionId" placeholder="Enter Session ID..." autocomplete="off">
+            <button onclick="updateSession()">SYNC SESSION</button>
+        </div>
     </aside>
 
     <footer>
@@ -519,7 +598,52 @@
 let sequenceId = 2; // Starting as per your instructions
 const MY_DOMAIN = "https://storm-319bad5e814663.my.salesforce.com";
 const AGENT_ID = "0XxKY000000Rh8h0AC";
-const SESSION_ID = "019bdc66-12e4-7856-8fef-cd172beb5736";
+
+// Change this from const to let
+let SESSION_ID = "019bdc66-12e4-7856-8fef-cd172beb5736";
+let ACCESS_TOKEN = "019bdc66-12e4-7856-8fef-cd172beb5736";
+
+
+function updateToken() {
+    const inputField = document.getElementById('newAccessToken');
+    const newToken = inputField.value.trim();
+    
+    if (newToken !== "") {
+        ACCESS_TOKEN = newToken;
+        
+        
+        // Visual feedback in the chat
+        const fleurBubble = document.querySelector('.bubble-fleur');
+        fleurBubble.innerHTML = `<strong>Fleur:</strong> "System access updated. I am now communicating via your secure Agentforce session. How may I assist you?"`;
+        
+        // Clear input for security
+        inputField.value = "";
+        console.log("Agentforce Token Updated.");
+    } else {
+        alert("Please enter a valid Salesforce Token.");
+    }
+}
+
+function updateSession() {
+    const inputField = document.getElementById('newSessionId');
+    const newSession = inputField.value.trim();
+    
+    if (newSession !== "") {
+        SESSION_ID = newSession;
+        
+       
+        
+        // Visual feedback in the chat
+        const fleurBubble = document.querySelector('.bubble-fleur');
+        fleurBubble.innerHTML = `<strong>Fleur:</strong> "System Session updated. How may I assist you?"`;
+        
+        // Clear input for security
+        inputField.value = "";
+        console.log("Agentforce Session Updated.");
+    } else {
+        alert("Please enter a valid Salesforce Session ID.");
+    }
+}
 
 async function sendToAI() {
     const input = document.getElementById('userQuery');
@@ -546,7 +670,7 @@ try {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + SESSION_ID, // Using Session ID as the Bearer token
+                'Authorization': 'Bearer ' + ACCESS_TOKEN, // Using Session ID as the Bearer token
                 'X-Chat-Sequence-Id': sequenceId.toString()
             },
             body: JSON.stringify({
